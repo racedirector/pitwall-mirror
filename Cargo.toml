@@ -1,0 +1,85 @@
+[package]
+name = "pitwall"
+version = "0.1.0"
+edition = "2024"
+authors = ["We Race Team"]
+license = "MIT"
+homepage = "https://werace.au/opensource/pitwall"
+keywords = ["iracing", "telemetry", "racing", "simulation"]
+categories = ["api-bindings", "asynchronous", "simulation", "os::windows-apis"]
+description = "Modern, type-safe Rust library for iRacing telemetry data"
+documentation = "https://docs.rs/pitwall"
+readme = "README.md"
+include = ["src/**", "benches/**", "tests/**/*.rs", "README.md", "LICENSE"]
+
+[dependencies]
+pitwall-derive = { version = "0.1.0", optional = true }
+thiserror = "2.0.16"
+anyhow = "1.0.99"
+tokio = { version = "1.47.1", features = ["macros", "rt", "sync", "time"] }
+tokio-util = "0.7.12"
+serde = { version = "1.0.219", features = ["derive"] }
+serde_yaml_ng = "0.10"
+tracing = "0.1.41"
+tracing-subscriber = { version = "0.3", features = ["fmt", "env-filter"] }
+async-trait = "0.1.85"
+tokio-stream = { version = "0.1", features = ["sync"] }
+futures = "0.3"
+pin-project-lite = "0.2"
+
+# Optional TypeScript generation support
+specta = { version = "2.0.0-rc.22", features = ["derive"], optional = true }
+
+# Windows-specific dependencies (for live telemetry)
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.62.0", features = [
+    "Win32_Foundation",
+    "Win32_System_Memory",
+    "Win32_System_Threading",
+    "Win32_UI_WindowsAndMessaging",
+] }
+windows-core = "0.62.0"
+
+[dev-dependencies]
+tokio = { version = "1.42", features = [
+    "macros",
+    "rt",
+    "rt-multi-thread",
+    "sync",
+    "time",
+] }
+tokio-stream = { version = "0.1", features = ["sync"] }
+futures = "0.3"
+futures-util = "0.3"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["fmt", "env-filter"] }
+proptest = "1.7.0"
+criterion = "0.7.0"
+trybuild = "1.0.105"
+
+[features]
+default = ["derive"]
+derive = ["dep:pitwall-derive"]
+tauri = ["dep:specta"]
+benchmark = []
+schema-discovery = []
+
+[[bench]]
+name = "frame_construction"
+harness = false
+required-features = ["benchmark"]
+
+[[bench]]
+name = "adapter_performance"
+harness = false
+required-features = ["benchmark"]
+
+[[bench]]
+name = "var_data_extraction"
+harness = false
+required-features = ["benchmark"]
+
+[[bench]]
+name = "live_frame_latency"
+harness = false
+required-features = ["benchmark"]
